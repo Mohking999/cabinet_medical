@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import '../models/patient.dart';
+import '../services/repository_provider.dart';
+import 'client_home_screen.dart';
 import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -13,7 +16,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _identifiantCtrl = TextEditingController(text: 'dr.benali@cabinet.dz');
   final _passwordCtrl = TextEditingController(text: '123456');
   bool _obscurePassword = true;
-  String _selectedRole = 'Médecin'; // 'Médecin' ou 'Secrétaire'
+  String _selectedRole = 'Médecin'; // 'Médecin', 'Secrétaire', ou 'Patient'
   bool _isLoading = false;
 
   @override
@@ -32,17 +35,45 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!mounted) return;
     setState(() => _isLoading = false);
 
-    final nomAffiche = _selectedRole == 'Médecin' ? 'Dr. Benali' : 'Secrétariat Médical';
+    if (_selectedRole == 'Patient') {
+      // Récupérer le patient depuis la base de données
+      final patients = await RepositoryProvider.repository.getPatients();
+      final Patient patientConnecte;
+      if (patients.isNotEmpty) {
+        patientConnecte = patients.first;
+      } else {
+        patientConnecte = Patient(
+          id: 1,
+          nom: 'Bouzid',
+          prenom: 'Karim',
+          telephone: '05 50 12 34 56',
+          numeroSecu: '01 85 16 012 345 (CNAS)',
+          dateNaissance: '14/04/1985',
+          antecedents: 'Hypertension artérielle',
+          allergies: 'Pénicilline',
+        );
+      }
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (_) => HomeScreen(
-          nomUtilisateur: nomAffiche,
-          roleUtilisateur: _selectedRole,
+      if (!mounted) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ClientHomeScreen(patient: patientConnecte),
         ),
-      ),
-    );
+      );
+    } else {
+      final nomAffiche = _selectedRole == 'Médecin' ? 'Dr. Benali' : 'Secrétariat Médical';
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => HomeScreen(
+            nomUtilisateur: nomAffiche,
+            roleUtilisateur: _selectedRole,
+          ),
+        ),
+      );
+    }
   }
 
   void _connexionRapide(String role) {
@@ -51,8 +82,11 @@ class _LoginScreenState extends State<LoginScreen> {
       if (role == 'Médecin') {
         _identifiantCtrl.text = 'dr.benali@cabinet.dz';
         _passwordCtrl.text = '123456';
-      } else {
+      } else if (role == 'Secrétaire') {
         _identifiantCtrl.text = 'secretaire@cabinet.dz';
+        _passwordCtrl.text = '123456';
+      } else {
+        _identifiantCtrl.text = 'karim.bouzid@patient.dz';
         _passwordCtrl.text = '123456';
       }
     });
@@ -141,51 +175,62 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                             const Text(
-                              'Accédez à votre espace praticien ou secrétariat',
+                              'Accédez à votre espace praticien, secrétariat ou patient (client)',
                               style: TextStyle(fontSize: 12, color: Colors.grey),
                             ),
                             const SizedBox(height: 16),
 
-                            // Sélecteur de rôle (Médecin ou Secrétaire)
+                            // Sélecteur de rôle (Médecin, Secrétaire ou Patient)
                             const Text(
                               'Rôle / Profil :',
                               style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
                             ),
                             const SizedBox(height: 6),
-                            Row(
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 6,
                               children: [
-                                Expanded(
-                                  child: ChoiceChip(
-                                    avatar: const Icon(Icons.medical_services, size: 16),
-                                    label: const Text('Médecin'),
-                                    selected: _selectedRole == 'Médecin',
-                                    onSelected: (selected) {
-                                      if (selected) {
-                                        setState(() {
-                                          _selectedRole = 'Médecin';
-                                          _identifiantCtrl.text = 'dr.benali@cabinet.dz';
-                                        });
-                                      }
-                                    },
-                                    selectedColor: Colors.teal.shade100,
-                                  ),
+                                ChoiceChip(
+                                  avatar: const Icon(Icons.medical_services, size: 16),
+                                  label: const Text('Médecin'),
+                                  selected: _selectedRole == 'Médecin',
+                                  onSelected: (selected) {
+                                    if (selected) {
+                                      setState(() {
+                                        _selectedRole = 'Médecin';
+                                        _identifiantCtrl.text = 'dr.benali@cabinet.dz';
+                                      });
+                                    }
+                                  },
+                                  selectedColor: Colors.teal.shade100,
                                 ),
-                                const SizedBox(width: 10),
-                                Expanded(
-                                  child: ChoiceChip(
-                                    avatar: const Icon(Icons.person, size: 16),
-                                    label: const Text('Secrétaire'),
-                                    selected: _selectedRole == 'Secrétaire',
-                                    onSelected: (selected) {
-                                      if (selected) {
-                                        setState(() {
-                                          _selectedRole = 'Secrétaire';
-                                          _identifiantCtrl.text = 'secretaire@cabinet.dz';
-                                        });
-                                      }
-                                    },
-                                    selectedColor: Colors.teal.shade100,
-                                  ),
+                                ChoiceChip(
+                                  avatar: const Icon(Icons.person, size: 16),
+                                  label: const Text('Secrétaire'),
+                                  selected: _selectedRole == 'Secrétaire',
+                                  onSelected: (selected) {
+                                    if (selected) {
+                                      setState(() {
+                                        _selectedRole = 'Secrétaire';
+                                        _identifiantCtrl.text = 'secretaire@cabinet.dz';
+                                      });
+                                    }
+                                  },
+                                  selectedColor: Colors.teal.shade100,
+                                ),
+                                ChoiceChip(
+                                  avatar: const Icon(Icons.badge, size: 16),
+                                  label: const Text('Patient (Client)'),
+                                  selected: _selectedRole == 'Patient',
+                                  onSelected: (selected) {
+                                    if (selected) {
+                                      setState(() {
+                                        _selectedRole = 'Patient';
+                                        _identifiantCtrl.text = 'karim.bouzid@patient.dz';
+                                      });
+                                    }
+                                  },
+                                  selectedColor: Colors.teal.shade100,
                                 ),
                               ],
                             ),
@@ -280,22 +325,25 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                   const SizedBox(height: 10),
-                  Row(
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 6,
+                    alignment: WrapAlignment.center,
                     children: [
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          icon: const Icon(Icons.medical_services, size: 16),
-                          label: const Text('Dr. Benali'),
-                          onPressed: () => _connexionRapide('Médecin'),
-                        ),
+                      OutlinedButton.icon(
+                        icon: const Icon(Icons.medical_services, size: 15),
+                        label: const Text('Dr. Benali', style: TextStyle(fontSize: 12)),
+                        onPressed: () => _connexionRapide('Médecin'),
                       ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          icon: const Icon(Icons.support_agent, size: 16),
-                          label: const Text('Secrétaire'),
-                          onPressed: () => _connexionRapide('Secrétaire'),
-                        ),
+                      OutlinedButton.icon(
+                        icon: const Icon(Icons.support_agent, size: 15),
+                        label: const Text('Secrétaire', style: TextStyle(fontSize: 12)),
+                        onPressed: () => _connexionRapide('Secrétaire'),
+                      ),
+                      OutlinedButton.icon(
+                        icon: const Icon(Icons.person, size: 15),
+                        label: const Text('Patient (Karim)', style: TextStyle(fontSize: 12)),
+                        onPressed: () => _connexionRapide('Patient'),
                       ),
                     ],
                   ),
