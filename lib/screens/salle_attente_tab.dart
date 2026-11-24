@@ -40,7 +40,7 @@ class _SalleAttenteTabState extends State<SalleAttenteTab> {
     }
   }
 
-  void _simulerLectureCarteVitale() async {
+  void _simulerLectureCarteChifa() async {
     final tous = await _repo.getRendezVous();
     final confirmes = tous.where((r) => r.statut == 'CONFIRME').toList();
 
@@ -63,14 +63,14 @@ class _SalleAttenteTabState extends State<SalleAttenteTab> {
             children: [
               Icon(Icons.credit_card, color: Colors.green),
               SizedBox(width: 8),
-              Text('Lecture Carte Vitale'),
+              Text('Lecture Carte Chifa (الشفاء)'),
             ],
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Sélectionnez le patient qui vient de présenter sa Carte Vitale :'),
+              const Text('Sélectionnez le patient qui vient de présenter sa Carte Chifa (CNAS/CASNOS) :'),
               const SizedBox(height: 12),
               ...confirmes.map((r) => ListTile(
                     dense: true,
@@ -86,7 +86,7 @@ class _SalleAttenteTabState extends State<SalleAttenteTab> {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           backgroundColor: Colors.green.shade800,
-                          content: Text('Carte Vitale validée pour ${r.nomPatient} ! Placé en salle d\'attente.'),
+                          content: Text('Carte Chifa validée pour ${r.nomPatient} ! Placé en salle d\'attente.'),
                         ),
                       );
                     },
@@ -134,8 +134,8 @@ class _SalleAttenteTabState extends State<SalleAttenteTab> {
                           foregroundColor: Colors.white,
                         ),
                         icon: const Icon(Icons.contactless, size: 18),
-                        label: const Text('Carte Vitale'),
-                        onPressed: _simulerLectureCarteVitale,
+                        label: const Text('Carte Chifa'),
+                        onPressed: _simulerLectureCarteChifa,
                       ),
                     ],
                   ),

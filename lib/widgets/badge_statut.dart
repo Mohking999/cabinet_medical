@@ -35,7 +35,7 @@ class BadgeStatut extends StatelessWidget {
       case 'CLOTUREE_TIERS_PAYANT':
         bg = Colors.teal.shade100;
         fg = Colors.teal.shade900;
-        libelle = '100% ALD / Tiers-Payant';
+        libelle = '100% Chifa / CNAS';
         icon = Icons.verified_user;
         break;
       case 'ANNULE':

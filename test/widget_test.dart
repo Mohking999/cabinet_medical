@@ -15,49 +15,59 @@ void main() {
     RepositoryProvider.useRemoteApi = false;
   });
 
-  test('Test unitaire des modèles Patient et RendezVous', () {
+  test('Test unitaire des modèles Algérie (Patient, RendezVous, Facture DA)', () {
     final patient = Patient(
       id: 1,
-      nom: 'Dupont',
-      prenom: 'Jean',
-      telephone: '06 12 34 56 78',
-      numeroSecu: '1850475012345',
+      nom: 'Bouzid',
+      prenom: 'Karim',
+      telephone: '05 50 12 34 56',
+      numeroSecu: '01 85 16 012 345 (CNAS)',
       dateNaissance: '14/04/1985',
       antecedents: 'Hypertension',
       allergies: 'Pénicilline',
     );
 
-    expect(patient.nomComplet, 'Dupont Jean');
+    expect(patient.nomComplet, 'Bouzid Karim');
     final map = patient.toMap();
-    expect(map['nom'], 'Dupont');
+    expect(map['nom'], 'Bouzid');
 
     final rdv = RendezVous(
       patientId: 1,
-      nomPatient: 'Dupont Jean',
-      praticienNom: 'Dr. Dubois',
+      nomPatient: 'Bouzid Karim',
+      praticienNom: 'Dr. Benali',
       dateHeure: '24/11/2026 à 10:00',
-      motif: 'Contrôle annuel',
+      motif: 'Contrôle Chifa',
       statut: 'CONFIRME',
     );
     expect(rdv.statut, 'CONFIRME');
 
     final facture = Facture(
       consultationId: 1,
-      nomPatient: 'Dupont Jean',
-      montantTotal: 26.50,
-      partRO: 18.55,
-      partRC: 7.95,
-      resteACharge: 7.95,
+      nomPatient: 'Bouzid Karim',
+      montantTotal: 2000.00,
+      partRO: 1600.00, // Part CNAS Chifa
+      partRC: 0.00,
+      resteACharge: 400.00, // Part Assuré
     );
-    expect(facture.montantTotal, 26.50);
+    expect(facture.montantTotal, 2000.00);
+    expect(facture.partRO, 1600.00);
   });
 
-  testWidgets('Test de montage de CabinetMedicalApp', (WidgetTester tester) async {
+  testWidgets('Test de montage de la page Login et connexion', (WidgetTester tester) async {
     await tester.pumpWidget(const CabinetMedicalApp());
     await tester.pumpAndSettle();
 
-    // Vérifier la présence du titre et de la barre de navigation
+    // Vérifier les éléments de la page Login
     expect(find.text('Cabinet Médical'), findsOneWidget);
+    expect(find.text('Authentification'), findsOneWidget);
+    expect(find.text('Se connecter'), findsOneWidget);
+    expect(find.text('Dr. Benali'), findsOneWidget);
+
+    // Se connecter via le bouton principal Se connecter
+    await tester.tap(find.text('Se connecter'));
+    await tester.pumpAndSettle();
+
+    // Vérifier qu'on est arrivé sur l'écran d'accueil avec les onglets
     expect(find.text('Rendez-vous'), findsWidgets);
     expect(find.text('Salle d\'attente'), findsWidgets);
     expect(find.text('Consultation'), findsWidgets);

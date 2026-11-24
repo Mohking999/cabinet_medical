@@ -91,21 +91,21 @@ class DatabaseHelper {
   }
 
   Future<void> _seedInitialData(Database db) async {
-    // Patients initiaux
+    // Patients initiaux (Contexte Algérie / CNAS / CASNOS)
     final p1 = Patient(
-      nom: 'Dupont',
-      prenom: 'Jean',
-      telephone: '06 12 34 56 78',
-      numeroSecu: '1 85 04 75 012 345 67',
+      nom: 'Bouzid',
+      prenom: 'Karim',
+      telephone: '05 50 12 34 56',
+      numeroSecu: '01 85 16 012 345 (CNAS)',
       dateNaissance: '14/04/1985',
-      antecedents: 'Hypertension artérielle, appendicectomie (2010)',
+      antecedents: 'Hypertension artérielle, appendicectomie',
       allergies: 'Pénicilline',
     );
     final p2 = Patient(
-      nom: 'Martin',
-      prenom: 'Claire',
-      telephone: '07 98 76 54 32',
-      numeroSecu: '2 92 11 69 456 789 12',
+      nom: 'Khelifi',
+      prenom: 'Amina',
+      telephone: '06 61 78 90 12',
+      numeroSecu: '02 92 31 456 789 (CASNOS)',
       dateNaissance: '22/11/1992',
       antecedents: 'Asthme modéré',
       allergies: 'Aucune allergie connue',
@@ -116,18 +116,18 @@ class DatabaseHelper {
     // Rendez-vous initiaux
     final r1 = RendezVous(
       patientId: p1Id,
-      nomPatient: 'Dupont Jean',
-      praticienNom: 'Dr. Dubois (Généraliste)',
+      nomPatient: 'Bouzid Karim',
+      praticienNom: 'Dr. Benali (Généraliste)',
       dateHeure: 'Aujourd\'hui 09:30',
-      motif: 'Contrôle annuel & renouvellement traitement',
+      motif: 'Contrôle tension & Renouvellement Chifa',
       statut: 'EN_SALLE_D_ATTENTE',
     );
     final r2 = RendezVous(
       patientId: p2Id,
-      nomPatient: 'Martin Claire',
-      praticienNom: 'Dr. Dubois (Généraliste)',
+      nomPatient: 'Khelifi Amina',
+      praticienNom: 'Dr. Benali (Généraliste)',
       dateHeure: 'Aujourd\'hui 10:15',
-      motif: 'Syndrome grippal & toux',
+      motif: 'Syndrome grippal & consultation',
       statut: 'CONFIRME',
     );
     await db.insert('rendez_vous', r1.toMap());
@@ -136,24 +136,24 @@ class DatabaseHelper {
     // Consultation initiale
     final c1 = Consultation(
       patientId: p1Id,
-      nomPatient: 'Dupont Jean',
+      nomPatient: 'Bouzid Karim',
       dateHeure: '24/11/2026 09:45',
       constantes: 'Tension: 13/8 - Pouls: 70 bpm - Température: 37.0°C',
       diagnostic: 'Stabilité de la tension artérielle. Bilan satisfaisant.',
-      observations: 'Bonne observance thérapeutique. À revoir dans 6 mois.',
-      ordonnanceMedicaments: 'Amlodipine 5mg : 1 comprimé le matin pendant 6 mois.',
+      observations: 'Bonne observance thérapeutique. À revoir dans 3 mois.',
+      ordonnanceMedicaments: 'Amlodipine 5mg : 1 comprimé le matin pendant 3 mois.',
     );
     final c1Id = await db.insert('consultations', c1.toMap());
 
-    // Facture initiale correspondante
+    // Facture initiale (Tarif en Dinars Algériens DA)
     final f1 = Facture(
       consultationId: c1Id,
-      nomPatient: 'Dupont Jean',
-      acteCode: 'G (Consultation de Médecine Générale)',
-      montantTotal: 26.50,
-      partRO: 18.55,
-      partRC: 7.95,
-      resteACharge: 7.95,
+      nomPatient: 'Bouzid Karim',
+      acteCode: 'Consultation de Médecine Générale',
+      montantTotal: 2000.00,
+      partRO: 1600.00, // Part CNAS Chifa (80%)
+      partRC: 0.00,
+      resteACharge: 400.00, // Part Assuré (20%)
       modePaiement: 'En attente',
       statut: 'EN_ATTENTE',
     );

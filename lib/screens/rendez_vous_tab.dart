@@ -43,7 +43,7 @@ class _RendezVousTabState extends State<RendezVousTab> {
     final formKey = GlobalKey<FormState>();
     int? selectedPatientId = patients.isNotEmpty ? patients.first.id : null;
     String patientNom = patients.isNotEmpty ? patients.first.nomComplet : '';
-    String praticien = 'Dr. Dubois (Généraliste)';
+    String praticien = 'Dr. Benali (Généraliste)';
     String motif = 'Consultation générale';
     DateTime selectedDate = DateTime.now();
     TimeOfDay selectedTime = const TimeOfDay(hour: 10, minute: 0);
@@ -123,7 +123,7 @@ class _RendezVousTabState extends State<RendezVousTab> {
                         ),
                         TextFormField(
                           controller: secuCtrl,
-                          decoration: const InputDecoration(labelText: 'N° Sécurité Sociale (NIR)'),
+                          decoration: const InputDecoration(labelText: 'N° Sécurité Sociale (NSS Chifa / CNAS / CASNOS)'),
                         ),
                         const SizedBox(height: 10),
                       ] else ...[
@@ -150,12 +150,12 @@ class _RendezVousTabState extends State<RendezVousTab> {
                         decoration: const InputDecoration(labelText: 'Médecin Praticien'),
                         items: const [
                           DropdownMenuItem(
-                            value: 'Dr. Dubois (Généraliste)',
-                            child: Text('Dr. Dubois (Généraliste)'),
+                            value: 'Dr. Benali (Généraliste)',
+                            child: Text('Dr. Benali (Généraliste)'),
                           ),
                           DropdownMenuItem(
-                            value: 'Dr. Martin (Pédiatre)',
-                            child: Text('Dr. Martin (Pédiatre)'),
+                            value: 'Dr. Mansouri (Spécialiste)',
+                            child: Text('Dr. Mansouri (Spécialiste)'),
                           ),
                         ],
                         onChanged: (v) => praticien = v ?? praticien,

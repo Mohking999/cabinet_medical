@@ -123,15 +123,15 @@ class _ConsultationTabState extends State<ConsultationTab> {
       await _repo.updateStatutRdv(_patientEnCours!.id!, 'TERMINE');
     }
 
-    // 3. Générer automatiquement la facture associée
+    // 3. Générer automatiquement la facture associée (Tarif Algérie en DA)
     final facture = Facture(
       consultationId: consultId,
       nomPatient: _patientEnCours!.nomPatient,
-      acteCode: 'G (Médecine Générale)',
-      montantTotal: 26.50,
-      partRO: 18.55,
-      partRC: 7.95,
-      resteACharge: 7.95,
+      acteCode: 'Consultation Médecine Générale',
+      montantTotal: 2000.00,
+      partRO: 1600.00,
+      partRC: 0.00,
+      resteACharge: 400.00,
       statut: 'EN_ATTENTE',
     );
     await _repo.insertFacture(facture);

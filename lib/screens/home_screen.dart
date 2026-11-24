@@ -1,13 +1,21 @@
 import 'package:flutter/material.dart';
 import '../models/rendez_vous.dart';
 import '../services/repository_provider.dart';
+import 'login_screen.dart';
 import 'rendez_vous_tab.dart';
 import 'salle_attente_tab.dart';
 import 'consultation_tab.dart';
 import 'facturation_tab.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final String nomUtilisateur;
+  final String roleUtilisateur;
+
+  const HomeScreen({
+    super.key,
+    this.nomUtilisateur = 'Dr. Benali',
+    this.roleUtilisateur = 'Médecin',
+  });
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -35,6 +43,39 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  void _deconnexion() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.logout, color: Colors.red),
+            SizedBox(width: 8),
+            Text('Déconnexion'),
+          ],
+        ),
+        content: const Text('Êtes-vous sûr de vouloir vous déconnecter du cabinet médical ?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Annuler'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
+            onPressed: () {
+              Navigator.pop(ctx);
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const LoginScreen()),
+              );
+            },
+            child: const Text('Déconnexion'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final tabs = [
@@ -52,13 +93,22 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.local_hospital, color: Colors.teal),
-            SizedBox(width: 10),
-            Text(
-              'Cabinet Médical',
-              style: TextStyle(fontWeight: FontWeight.bold),
+            const Icon(Icons.local_hospital, color: Colors.teal),
+            const SizedBox(width: 8),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Cabinet Médical',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+                Text(
+                  '${widget.nomUtilisateur} (${widget.roleUtilisateur})',
+                  style: TextStyle(fontSize: 11, color: Colors.teal.shade800),
+                ),
+              ],
             ),
           ],
         ),
@@ -102,6 +152,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ],
+          ),
+          IconButton(
+            tooltip: 'Déconnexion',
+            icon: const Icon(Icons.logout, color: Colors.redAccent),
+            onPressed: _deconnexion,
           ),
         ],
       ),

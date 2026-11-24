@@ -42,7 +42,7 @@ class _FacturationTabState extends State<FacturationTab> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (ctx) {
-        String modeSelectionne = 'Carte Bancaire (CB)';
+        String modeSelectionne = 'Espèces (DA)';
         return Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
@@ -53,7 +53,7 @@ class _FacturationTabState extends State<FacturationTab> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
-                    'Règlement de la Consultation',
+                    'Règlement Consultation & Chifa',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   IconButton(
@@ -64,9 +64,8 @@ class _FacturationTabState extends State<FacturationTab> {
               ),
               const Divider(),
               Text('Patient : ${f.nomPatient}', style: const TextStyle(fontWeight: FontWeight.w600)),
-              Text('Montant total : ${f.montantTotal.toStringAsFixed(2)} €'),
-              Text('Part Caisse (RO 70%) : ${f.partRO.toStringAsFixed(2)} € (Tiers-Payant télétransmis)'),
-              Text('Part Mutuelle (RC 30%) : ${f.partRC.toStringAsFixed(2)} €'),
+              Text('Montant total : ${f.montantTotal.toStringAsFixed(2)} DA'),
+              Text('Part Caisse CNAS/CASNOS : ${f.partRO.toStringAsFixed(2)} DA (Tiers-Payant Chifa)'),
               const SizedBox(height: 8),
               Container(
                 padding: const EdgeInsets.all(12),
@@ -79,7 +78,7 @@ class _FacturationTabState extends State<FacturationTab> {
                   children: [
                     const Text('Reste à charge patient :', style: TextStyle(fontWeight: FontWeight.bold)),
                     Text(
-                      '${f.resteACharge.toStringAsFixed(2)} €',
+                      '${f.resteACharge.toStringAsFixed(2)} DA',
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.green.shade900),
                     ),
                   ],
@@ -90,10 +89,10 @@ class _FacturationTabState extends State<FacturationTab> {
               DropdownButtonFormField<String>(
                 initialValue: modeSelectionne,
                 items: const [
-                  DropdownMenuItem(value: 'Carte Bancaire (CB)', child: Text('Carte Bancaire (CB)')),
-                  DropdownMenuItem(value: 'Espèces', child: Text('Espèces')),
-                  DropdownMenuItem(value: 'Chèque', child: Text('Chèque')),
-                  DropdownMenuItem(value: 'Tiers-Payant 100% (ALD/C2S)', child: Text('Tiers-Payant 100% (ALD / C2S - 0 €)')),
+                  DropdownMenuItem(value: 'Espèces (DA)', child: Text('Espèces (DA)')),
+                  DropdownMenuItem(value: 'Carte CIB / Edahabia', child: Text('Carte CIB / Edahabia')),
+                  DropdownMenuItem(value: 'Chèque bancaire', child: Text('Chèque bancaire')),
+                  DropdownMenuItem(value: '100% Chifa Chronique', child: Text('100% Chifa Chronique (0 DA)')),
                 ],
                 onChanged: (val) => modeSelectionne = val ?? modeSelectionne,
               ),
@@ -108,10 +107,10 @@ class _FacturationTabState extends State<FacturationTab> {
                 label: const Text('Valider & Imprimer Quittance'),
                 onPressed: () async {
                   Navigator.pop(ctx);
-                  final isAld = modeSelectionne.contains('100%');
+                  final isChifa100 = modeSelectionne.contains('100%');
                   await _repo.updateFactureStatut(
                     f.id!,
-                    isAld ? 'CLOTUREE_TIERS_PAYANT' : 'PAYEE',
+                    isChifa100 ? 'CLOTUREE_TIERS_PAYANT' : 'PAYEE',
                     modeSelectionne,
                   );
                   _chargerFactures();
@@ -120,7 +119,7 @@ class _FacturationTabState extends State<FacturationTab> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         backgroundColor: Colors.green.shade800,
-                        content: Text('Paiement enregistré pour ${f.nomPatient}. Télétransmission SESAM-Vitale confirmée !'),
+                        content: Text('Paiement enregistré pour ${f.nomPatient}. Télétransmission Chifa CNAS validée !'),
                       ),
                     );
                   }
@@ -171,13 +170,13 @@ class _FacturationTabState extends State<FacturationTab> {
                           ),
                           const SizedBox(height: 6),
                           Text(
-                            'Acte : ${f.acteCode} — Total : ${f.montantTotal.toStringAsFixed(2)} €',
+                            'Acte : ${f.acteCode} — Total : ${f.montantTotal.toStringAsFixed(2)} DA',
                             style: const TextStyle(fontSize: 13),
                           ),
                           Row(
                             children: [
-                              Text('Part CPAM : ${f.partRO.toStringAsFixed(2)} €  |  ', style: TextStyle(color: Colors.grey.shade700, fontSize: 12)),
-                              Text('Part Mutuelle : ${f.partRC.toStringAsFixed(2)} €', style: TextStyle(color: Colors.grey.shade700, fontSize: 12)),
+                              Text('Part CNAS/Chifa : ${f.partRO.toStringAsFixed(2)} DA  |  ', style: TextStyle(color: Colors.grey.shade700, fontSize: 12)),
+                              Text('Ticket Modérateur : ${f.resteACharge.toStringAsFixed(2)} DA', style: TextStyle(color: Colors.grey.shade700, fontSize: 12)),
                             ],
                           ),
                           const SizedBox(height: 10),
@@ -185,7 +184,7 @@ class _FacturationTabState extends State<FacturationTab> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                'Reste dû : ${isPaye ? "0.00" : f.resteACharge.toStringAsFixed(2)} €',
+                                'Reste dû : ${isPaye ? "0.00" : f.resteACharge.toStringAsFixed(2)} DA',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 15,
