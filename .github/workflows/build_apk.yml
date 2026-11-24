@@ -8,6 +8,9 @@ on:
     branches: [ main, master ]
   workflow_dispatch: # Permet de lancer la compilation manuellement depuis GitHub
 
+permissions:
+  contents: write
+
 jobs:
   build:
     name: Compiler APK Android
